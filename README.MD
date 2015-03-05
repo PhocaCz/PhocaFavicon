@@ -1,0 +1,1 @@
+Phoca Favicon is Joomla! CMS extension. Component which sets favicon on website.
