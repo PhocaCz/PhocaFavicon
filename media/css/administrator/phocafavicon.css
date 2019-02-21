@@ -316,3 +316,12 @@ display: table; vertical-align:middle;
 	width: 6em;
 	background: 		url('images/btn.png') repeat-x, url('images/bg-upgrade.png') 10px center no-repeat #4080BF;
 }
+
+#adminForm {
+	margin: 0 0 0 0 !important;
+}
+
+.ph-cpanel-logo img {
+	transform: scale(0.6);
+	transform-origin: 0 50%;
+}

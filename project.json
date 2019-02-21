@@ -1,0 +1,52 @@
+{
+	"author": "Jan Pavelka (www.phoca.cz)",
+	"authorUrl": "https://www.phoca.cz",
+	"copyright": "Jan Pavelka",
+	"license": "GNU/GPL",
+	"projectName": "PhocaFavicon",
+	"extensionName": "Phoca Favicon",
+	"projectInitials" : "FV",				  
+	"description": "Phoca Favicon is Joomla! CMS component. It is a simple component that generates favicon (favicon.ico) on your Joomla! site. You can change the favicon of your site whenever you like.",
+	"projectUrl": "https://www.phoca.cz/phocafavicon",
+	"projectDocumentationUrl": "https://www.phoca.cz/documentation/category/4-phoca-favicon-component",
+	"projectMainComponent": "Phoca Favicon",
+	"projectMainComponentInfoUrl": "http://www.phoca.cz/project/phocafavicon-joomla-favicon",
+	"projectDemo" : {
+		"Joomla! 1.5 Demo": "https://www.phoca.cz/demo/",
+		"Joomla! 2.5 Demo": "https://www.phoca.cz/joomlademo/",
+		"Joomla! 3 Demo": "https://www.phoca.cz/joomla3demo/",
+		"Phoca Cart Demo": "https://www.phoca.cz/phocacartdemo/"
+
+	},
+	"projectColor": "#6E7276",												
+	"menu": {
+		"main":{
+			"0" : {
+				"image": "icon-16-pf-menu.png",
+				"view": "",
+				"link": "option=com_phocafavicon",
+				"title": "COM_PHOCAFAVICON"
+			}
+		},
+		"submenu": {
+			"0" : {
+				"image": "icon-16-pf-control-panel.png",
+				"view": "phocafaviconcp",
+				"link": "option=com_phocafavicon",
+				"title": "COM_PHOCAFAVICON_CONTROLPANEL"
+			},
+			"1" : {
+				"image": "icon-16-pf-menu-favicon.png",
+				"view": "phocafavicon",
+				"link": "option=com_phocafavicon&amp;view=phocafavicon",
+				"title": "COM_PHOCAFAVICON_CREATE_FAVICON"
+			},
+			"2": {
+				"image": "icon-16-pf-menu-info.png",
+				"view": "phocafaviconin",
+				"link": "option=com_phocafavicon&amp;view=phocafaviconin",
+				"title": "COM_PHOCAFAVICON_INFO"
+			}
+		}
+	}
+}
