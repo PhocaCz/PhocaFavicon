@@ -4,10 +4,10 @@
 		<description><![CDATA[ Phoca Favicon is Joomla! CMS component. It is a simple component that generates favicon (favicon.ico) on your Joomla! site. You can change the favicon of your site whenever you like. ]]></description>
 		<element>com_phocafavicon</element>
 		<type>component</type>
-		<version>3.0.2</version>
-		<infourl title="Phoca Favicon 3.0.2">http://www.phoca.cz/version/index.php?phocafavicon=3.0.2</infourl>
+		<version>3.0.3</version>
+		<infourl title="Phoca Favicon 3.0.3">http://www.phoca.cz/version/index.php?phocafavicon=3.0.3</infourl>
 		<downloads>
-			<downloadurl type="full" format="zip">https://github.com/PhocaCz/PhocaFavicon/releases/download/3.0.2/com_phocafavicon_v3.0.2.zip</downloadurl>
+			<downloadurl type="full" format="zip">https://github.com/PhocaCz/PhocaFavicon/releases/download/3.0.3/com_phocafavicon_v3.0.3.zip</downloadurl>
 		</downloads>
 		<tags>
 			<tag>stable</tag>

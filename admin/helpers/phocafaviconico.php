@@ -9,7 +9,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 jimport( 'joomla.application.component.controller' );
-jimport( 'joomla.filesystem.folder' ); 
+jimport( 'joomla.filesystem.folder' );
 jimport( 'joomla.filesystem.file' );
 
 
@@ -19,9 +19,9 @@ class PhocaFaviconIcoHelper
 //------------------------------------------------------------------------------------------
 // createIcoFile
 //------------------------------------------------------------------------------------------
-	public static function createIcoFile($file_thumbnail, $file_favicon)
+	public static function createIcoFile($file_thumbnails, $file_favicon)
 	{
-		list($w, $h, $type) = GetImageSize($file_thumbnail);
+		list($w, $h, $type) = GetImageSize($file_thumbnails[0]);
 		switch($type)
 		{
 			case IMAGETYPE_JPEG: $imgIn = 'ImageCreateFromJPEG'; break;
@@ -30,16 +30,19 @@ class PhocaFaviconIcoHelper
 			case IMAGETYPE_WBMP: $imgIn = 'ImageCreateFromWBMP'; break;
 			default: return false; break;
 		}
-		
-		if (@$image_create_from = $imgIn($file_thumbnail))
-		{
-			$images_create_from = array($image_create_from);
+
+        @$image_create_fromS = $imgIn($file_thumbnails[0]);
+        @$image_create_fromM = $imgIn($file_thumbnails[1]);
+        @$image_create_fromL = $imgIn($file_thumbnails[2]);
+		if ($image_create_fromS && $image_create_fromM && $image_create_fromL)  {
+
+		    $images_create_from = array($image_create_fromS, $image_create_fromM, $image_create_fromL);
 			$icon_data = PhocaFaviconIcoHelper::GD2ICOstring($images_create_from);
-			ImageDestroy($image_create_from); // free memory
-			return $icon_data; 
+			ImageDestroy($images_create_from); // free memory
+			return $icon_data;
 		}
 	}
-	
+
 //------------------------------------------------------------------------------------------
 // GD2ICOstring
 // phpThumb() by James Heinrich <info@silisoftware.com> available at http://phpthumb.sourceforge.net
@@ -48,6 +51,9 @@ class PhocaFaviconIcoHelper
 //------------------------------------------------------------------------------------------
 	public static function GD2ICOstring(&$gd_image_array)
 	{
+
+
+
 		foreach ($gd_image_array as $key => $gd_image)
 		{
 
@@ -56,10 +62,12 @@ class PhocaFaviconIcoHelper
 	    	$bpp[$key]          = ImageIsTrueColor($gd_image) ? 32 : 24;
 	    	$totalcolors[$key]  = ImageColorsTotal($gd_image);
 
+
+
 			$icXOR[$key] = '';
-			for ($y = $ImageHeights[$key] - 1; $y >= 0; $y--) 
+			for ($y = $ImageHeights[$key] - 1; $y >= 0; $y--)
 			{
-				for ($x = 0; $x < $ImageWidths[$key]; $x++) 
+				for ($x = 0; $x < $ImageWidths[$key]; $x++)
 				{
 					$argb = PhocaFaviconIcoHelper::GetPixelColor($gd_image, $x, $y);
 					$a = round(255 * ((127 - $argb['alpha']) / 127));
@@ -85,9 +93,9 @@ class PhocaFaviconIcoHelper
 				}
 			}
 			$icAND[$key] = '';
-			foreach ($icANDmask[$key] as $y => $scanlinemaskbits) 
+			foreach ($icANDmask[$key] as $y => $scanlinemaskbits)
 			{
-				for ($i = 0; $i < strlen($scanlinemaskbits); $i += 8) 
+				for ($i = 0; $i < strlen($scanlinemaskbits); $i += 8)
 				{
 					$icAND[$key] .= chr(bindec(str_pad(substr($scanlinemaskbits, $i, 8), 8, '0', STR_PAD_LEFT)));
 				}
@@ -95,7 +103,8 @@ class PhocaFaviconIcoHelper
 
 		}
 
-	    foreach ($gd_image_array as $key => $gd_image) 
+
+	    foreach ($gd_image_array as $key => $gd_image)
 		{
 			$biSizeImage = $ImageWidths[$key] * $ImageHeights[$key] * ($bpp[$key] / 8);
 
@@ -122,6 +131,7 @@ class PhocaFaviconIcoHelper
 		$icondata .= PhocaFaviconIcoHelper::LittleEndian2String(count($gd_image_array), 2);  // idCount;      // How many images?
 
 		$dwImageOffset = 6 + (count($gd_image_array) * 16);
+
 		foreach ($gd_image_array as $key => $gd_image) {
 	    	// ICONDIRENTRY   idEntries[1]; // An entry for each image (idCount of 'em)
 
@@ -140,21 +150,26 @@ class PhocaFaviconIcoHelper
 			$dwImageOffset += strlen($BitmapInfoHeader[$key]);
 			$dwImageOffset += strlen($icXOR[$key]);
 			$dwImageOffset += strlen($icAND[$key]);
+
+
 	    }
+
 
 	    foreach ($gd_image_array as $key => $gd_image) {
 			$icondata .= $BitmapInfoHeader[$key];
 			$icondata .= $icXOR[$key];
 			$icondata .= $icAND[$key];
 	    }
+
+
 	    return $icondata;
 	}
 //------------------------------------------------------------------------------------------
 // GetPixelColor
-//------------------------------------------------------------------------------------------	
-	public static function GetPixelColor(&$img, $x, $y) 
+//------------------------------------------------------------------------------------------
+	public static function GetPixelColor(&$img, $x, $y)
 	{
-		if (!is_resource($img)) 
+		if (!is_resource($img))
 		{
 			return false;
 		}
@@ -162,11 +177,11 @@ class PhocaFaviconIcoHelper
 	}
 //------------------------------------------------------------------------------------------
 // LittleEndian2String
-//------------------------------------------------------------------------------------------	
-	public static function LittleEndian2String($number, $minbytes=1) 
+//------------------------------------------------------------------------------------------
+	public static function LittleEndian2String($number, $minbytes=1)
 	{
 		$intstring = '';
-		while ($number > 0) 
+		while ($number > 0)
 		{
 			$intstring = $intstring.chr($number & 255);
 			$number >>= 8;

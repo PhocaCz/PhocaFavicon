@@ -25,12 +25,12 @@ class PhocaFaviconHelper
 	}
 
 	public static function getFileResize($size='all') {
-		$large_width	= 640;
-		$large_height	= 480;
-		$medium_width	= 100;
-		$medium_height	= 100;
-		$small_width	= 16;//favicon using
-		$small_height	= 16;//favicon using
+		$large_width	= 48;
+		$large_height	= 48;
+		$medium_width	= 32;
+		$medium_height	= 32;
+		$small_width	= 16;
+		$small_height	= 16;
 
 		switch ($size) {
 			case 'large':
@@ -106,6 +106,14 @@ class PhocaFaviconHelper
 			$file['thumb_name_s_no_abs'] 	= $thumbnail_file_s['abs'];
 			$file['thumb_name_s_no_rel'] 	= $thumbnail_file_s['rel'];
 
+			$thumbnail_file_m 				= PhocaFaviconHelper::getThumbnailName ($file_no, 'medium');
+			$file['thumb_name_m_no_abs'] 	= $thumbnail_file_m['abs'];
+			$file['thumb_name_m_no_rel'] 	= $thumbnail_file_m['rel'];
+
+			$thumbnail_file_l 				= PhocaFaviconHelper::getThumbnailName ($file_no, 'large');
+			$file['thumb_name_l_no_abs'] 	= $thumbnail_file_l['abs'];
+			$file['thumb_name_l_no_rel'] 	= $thumbnail_file_l['rel'];
+
 			PhocaFaviconHelper::createFolderThumbnail($file['path_without_name_no'], $file['path_without_name_thumbs_no'] . '/' );
 
 			//Create thumbnail if not exists
@@ -120,16 +128,19 @@ class PhocaFaviconHelper
 				if ($small == 1)
 				{
 					$creating = PhocaFaviconHelper::createFileThumbnail($errorMsg, $file['path_with_name'], $file['thumb_name_s_no_abs'], 'small');
+					$creating2 = PhocaFaviconHelper::createFileThumbnail($errorMsg, $file['path_with_name'], $file['thumb_name_m_no_abs'], 'medium');
+					$creating3 = PhocaFaviconHelper::createFileThumbnail($errorMsg, $file['path_with_name'], $file['thumb_name_l_no_abs'], 'large');
+
 					if ($creating == 1 || $creating == 3)//thumbnail now created or thumbnail exists now
 					{
 						$file_favicon 	= str_replace('\\', '/', JPath::clean($path['tmpl_abs_ds']. '/' .$template . '/'. 'favicon.ico'));
 						$file_resize	= PhocaFaviconHelper::getFileResize('favicon');
 
-						if (JFile::exists($file['thumb_name_s_no_abs'])) {
+						if (JFile::exists($file['thumb_name_s_no_abs']) && JFile::exists($file['thumb_name_m_no_abs']) && JFile::exists($file['thumb_name_l_no_abs'])) {
 							if (JFile::exists($file_favicon))//if favicon exists, rename it to bak file
 							{
 								if (JFile::copy( $file_favicon, $file_favicon . '.bak', '' )) {
-									$icon_data = PhocaFaviconIcoHelper::createIcoFile($file['thumb_name_s_no_abs'], $file_favicon);
+									$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon);
 									if ($icon_data)
 									{
 										JFile::write( $file_favicon, $icon_data );
@@ -146,7 +157,7 @@ class PhocaFaviconHelper
 							}
 							else
 							{
-								$icon_data = PhocaFaviconIcoHelper::createIcoFile($file['thumb_name_s_no_abs'], $file_favicon);
+								$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon);
 								if ($icon_data)
 								{
 									JFile::write( $file_favicon, $icon_data );
@@ -311,6 +322,7 @@ class PhocaFaviconHelper
 
 				//Refresh the site after creating thumbnails - we can do e.g. 100 thumbanails
 				// Thumbnail was created
+				// Display the message only one time
 				if ($creating == 1)
 				{
 					echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' . "\n";
@@ -407,6 +419,12 @@ class PhocaFaviconHelper
 			{
 				//Don't do thumbnail if the file is smaller (width, height) than the possible thumbnail
 				list($width, $height) = GetImageSize($file_original);
+
+				// Render the message only one time
+				if ($size == 'small') {
+					echo '<div style="font-family: sans-serif, Arial">' . JText::_('COM_PHOCAFAVICON_POSSIBLE_PROBLEM_IMAGE_CREATING') . '</div>';
+				}
+
 				if ($width > $file_resize['width'] || $height > $file_resize['width'])//larger
 				{
 					if (PhocaFaviconHelper::imageMagic($errorMsg, $file_original, $file_thumbnail, $file_resize['width'] , $file_resize['height'])) {return 1;} else {return 2;}
@@ -475,7 +493,6 @@ class PhocaFaviconHelper
 	public static function imageMagic(&$errorMsg, $file_in, $file_out=null, $width=null, $height=null, $crop=null, $type_out=null) {
 
 
-		echo '<div style="font-family: sans-serif, Arial">'.JText::_('COM_PHOCAFAVICON_POSSIBLE_PROBLEM_IMAGE_CREATING').'</div>';
 
 		// Memory - - - - - - - -
 		$memory = 8;

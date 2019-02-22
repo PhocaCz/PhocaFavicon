@@ -67,8 +67,8 @@ class PhocaFaviconCpViewPhocaFaviconi extends JViewLegacy
 
 		$path 			= PhocaFaviconHelper::getPathSet();
 		$path_orig_rel 	= $path['orig_rel_ds'];
-		$this->assign('path_orig_rel', $path_orig_rel);
 
+        $this->t['path_orig_rel'] = $path_orig_rel;
 
 
 		parent::display($tpl);

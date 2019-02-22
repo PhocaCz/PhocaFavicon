@@ -2,12 +2,12 @@
 <extension type="component" method="upgrade" version="3">
 	<name>com_phocafavicon</name>
 	<author>Jan Pavelka (www.phoca.cz)</author>
-	<creationDate>21/02/2019</creationDate>
+	<creationDate>22/02/2019</creationDate>
 	<authorEmail></authorEmail>
 	<authorUrl>https://www.phoca.cz</authorUrl>
 	<copyright>Jan Pavelka</copyright>
 	<license>GNU/GPL</license>
-	<version>3.0.2</version>
+	<version>3.0.3</version>
 	<description>COM_PHOCAFAVICON_XML_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 	<projectName>PhocaFavicon</projectName>

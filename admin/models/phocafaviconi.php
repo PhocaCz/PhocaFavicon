@@ -75,7 +75,7 @@ class PhocaFaviconCpModelPhocaFaviconi extends JModelLegacy
 		} else {
 			$orig_path = $path['orig_abs_ds'];
 		}
-		$orig_path_server 	= str_replace(DS, '/', $path['orig_abs'] .'/');
+		$orig_path_server 	= str_replace('\\', '/', $path['orig_abs'] .'/');
 
 
 		$images 	= array ();
@@ -91,17 +91,17 @@ class PhocaFaviconCpModelPhocaFaviconi extends JModelLegacy
 		{
 			foreach ($file_list as $file)
 			{
-				if (is_file($orig_path.DS.$file) && substr($file, 0, 1) != '.' && strtolower($file) !== 'index.html')
+				if (is_file($orig_path.'/'.$file) && substr($file, 0, 1) != '.' && strtolower($file) !== 'index.html')
 				{
 					//Create thumbnails small, medium, large
 					$refresh_url 	= 'index.php?option=com_phocafavicon&view=phocafaviconi&tmpl=component&folder='.$current.'&field='.$field;
 					$file_no		= $current . "/" . $file;
-					$file_thumb 	= PhocaFaviconHelper::getOrCreateThumbnail($errorMsg, $path['orig_abs_ds'], $file_no, $refresh_url, 0, 1, 0);
+					$file_thumb 	= PhocaFaviconHelper::getOrCreateThumbnail($errorMsg, $path['orig_abs_ds'], $file_no, $refresh_url, 1,1,1);
 
 					$tmp 								= new JObject();
 					$tmp->name 							= $file_thumb['name'];
 					$tmp->path_with_name_relative_no	= $file_thumb['path_with_name_relative_no']	;
-					$tmp->linkthumbnailpath				= str_replace("../", "", $file_thumb['thumb_name_m_no_rel']);
+					$tmp->linkthumbnailpath				= str_replace("../", "", $file_thumb['thumb_name_l_no_rel']);
 					$images[] = $tmp;
 				}
 			}
@@ -118,7 +118,7 @@ class PhocaFaviconCpModelPhocaFaviconi extends JModelLegacy
 			{
 				$tmp 							= new JObject();
 				$tmp->name 						= basename($folder);
-				$tmp->path_with_name 			= str_replace(DS, '/', JPath::clean($orig_path . DS . $folder));
+				$tmp->path_with_name 			= str_replace('\\', '/', JPath::clean($orig_path . DS . $folder));
 				$tmp->path_without_name_relative= $path['orig_rel_ds'] . str_replace($orig_path_server, '', $tmp->path_with_name);
 				$tmp->path_with_name_relative_no= str_replace($orig_path_server, '', $tmp->path_with_name);
 
