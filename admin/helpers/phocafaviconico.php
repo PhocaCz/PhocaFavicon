@@ -38,7 +38,9 @@ class PhocaFaviconIcoHelper
 
 		    $images_create_from = array($image_create_fromS, $image_create_fromM, $image_create_fromL);
 			$icon_data = PhocaFaviconIcoHelper::GD2ICOstring($images_create_from);
-			ImageDestroy($images_create_from); // free memory
+			ImageDestroy($image_create_fromS); // free memory
+            ImageDestroy($image_create_fromM); // free memory
+            ImageDestroy($image_create_fromL); // free memory
 			return $icon_data;
 		}
 	}
