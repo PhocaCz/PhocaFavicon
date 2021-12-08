@@ -9,6 +9,9 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
 
+
+use Joomla\CMS\HTML\HTMLHelper;
+
 defined('JPATH_BASE') or die;
 
 jimport('joomla.html.html');
@@ -47,21 +50,21 @@ class JFormFieldPhocaTemplates extends JFormFieldList
 		// Set the query and load the styles.
 		$db->setQuery($query);
 		$styles = $db->loadObjectList();
-		
+
 		//$options[] = JHTML::_('select.option', '', '- '.JText::_('COM_PHOCAFAVICON_SELECT_TEMPLATE').' -');
-		
+
 		// Build the grouped list array.
 		foreach($styles as $style) {
 			$options[] = JHtml::_('select.option', $style->id, $style->template);
 		}*/
-		
+
 		$templateFolders = PhocaFaviconHelper::getTemplateFolders();
 		if(!empty($templateFolders)) {
 			foreach($templateFolders as $key => $value) {
-				$options[] = JHtml::_('select.option', $value->name, $value->name);
+				$options[] = HtmlHelper::_('select.option', $value->name, $value->name);
 			}
 		}
-		
+
 		$options = array_merge(parent::getOptions(), $options);
 		return $options;
 		//return JHTML::_('select.genericlist',  $options,  $this->name, 'class="inputbox"', 'value', 'text', $this->value, $this->id );

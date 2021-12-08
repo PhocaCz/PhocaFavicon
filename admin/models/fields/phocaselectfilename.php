@@ -8,6 +8,9 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
+
+use Joomla\CMS\Language\Text;
+
 defined('JPATH_BASE') or die;
 jimport('joomla.form.formfield');
 
@@ -33,8 +36,8 @@ class JFormFieldPhocaSelectFilename extends JFormField
 			$attr		= '';
 			return '<input type="text" name="'.$this->name.'" id="'.$this->id.'" value="-" '.$attr.$readonly.' />';
 		}
-		
-		
+
+
 		/*$script 	= array();
 		$script[] 	= '	function phocaSelectFileName_'.$this->id.'(title) {';
 		$script[] 	= '		document.getElementById("'.$this->id.'").value = title;';
@@ -42,37 +45,37 @@ class JFormFieldPhocaSelectFilename extends JFormField
 		$script[]	= '		jQuery(\'#'.$idA.'\').modal(\'toggle\');';
 		$script[] 	= '	}';
 		JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));*/
-		
+
 		JHtml::_('jquery.framework');
-		
+
 		JFactory::getDocument()->addScriptDeclaration('
 			function phocaSelectFileName_' . $this->id . '(name) {
 				document.getElementById("' . $this->id . '").value = name;
 				jQuery(\'#'.$idA.'\').modal(\'toggle\');
 			}
 		');
-		
+
 //readonly="readonly"
-		$html[] = '<span class="input-append"><input type="text" ' . $required . ' id="' . $this->id . '" name="' . $this->name . '"'
+		$html[] = '<span class="input-append input-group"><input type="text" ' . $required . ' id="' . $this->id . '" name="' . $this->name . '"'
 			. ' value="' . $this->value . '"' . $size . $class . ' />';
-		$html[] = '<a href="#'.$idA.'" role="button" class="btn btn-primary" data-toggle="modal" title="' . JText::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE') . '">'
+		$html[] = '<a href="#'.$idA.'" role="button" class="btn btn-primary" data-bs-toggle="modal" title="' . Text::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE') . '">'
 			. '<span class="icon-list icon-white"></span> '
-			. JText::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE') . '</a></span>';
+			. Text::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE') . '</a></span>';
 		$html[] = JHtml::_(
 			'bootstrap.renderModal',
 			$idA,
 			array(
 				'url'    => $link,
-				'title'  => JText::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE'),
+				'title'  => Text::_('COM_PHOCAFAVICON_FORM_SELECT_IMAGE'),
 				'width'  => '700px',
 				'height' => '400px',
 				'modalWidth' => '80',
 				'bodyHeight' => '70',
-				'footer' => '<button type="button" class="btn" data-dismiss="modal" aria-hidden="true">'
-					. JText::_('COM_PHOCAFAVICON_CLOSE') . '</button>'
+				'footer' => '<button type="button" class="btn" data-bs-dismiss="modal" aria-hidden="true">'
+					. Text::_('COM_PHOCAFAVICON_CLOSE') . '</button>'
 			)
 		);
-		
+
 		// We don't use hidden field name, we can edit it the filename form field, there are three ways of adding filename:
 		// - manually typed
 		// - selected by image select box
@@ -82,7 +85,7 @@ class JFormFieldPhocaSelectFilename extends JFormField
 		//
 		//$html[] = '<input class="input-small" type="hidden" name="' . $this->name . '" value="'
 		//	. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" />';
-			
+
 
 		return implode("\n", $html);
 	}

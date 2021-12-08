@@ -7,6 +7,9 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
+
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.filesystem.folder' );
@@ -23,37 +26,37 @@ class com_phocafaviconInstallerScript
 
 
 	function createFolders() {
-	
+
 		$folder[0][0]	=	'images/phocafavicon/' ;
 		$folder[0][1]	= 	JPATH_ROOT . '/'.  $folder[0][0];
-	
-		
+
+
 		$msg = '';
 		foreach ($folder as $k => $v) {
-   
+
 			if (!JFolder::exists( $v[1])) {
-	
+
 				if (JFolder::create( $v[1], 0755 )) {
-	 
-	 
+
+
 					$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
 					JFile::write($v[1].'/'."index.html", $data);
-					$msg .= '<div><b><span style="color:#009933">Folder</span> ' . $v[0] 
+					$msg .= '<div><b><span style="color:#009933">Folder</span> ' . $v[0]
 						 .' <span style="color:#009933">created!</span></b></div>';
-				  
-	   
+
+
 				} else {
-	 
+
 					$msg .= '<div><b><span style="color:#CC0033">Folder</span> ' . $v[0]
 						 .' <span style="color:#CC0033">creation failed!</span></b> Please create it manually.</div>';
-				  
+
 				}
-	
+
 			} else {
 				// Folder exists
-				$msg .= '<div><b><span style="color:#009933">Folder</span> ' . $v[0] 
+				$msg .= '<div><b><span style="color:#009933">Folder</span> ' . $v[0]
 					 .' <span style="color:#009933">exists!</span></b></div>';
-				 
+
 			}
 		}
 		return $msg;
@@ -101,15 +104,15 @@ class com_phocafaviconInstallerScript
 		if ($type == 'update' || $type == 'install') {
 
 			if ($type == 'update') {
-				$status =  JText::_($this->updatetext);
+				$status =  Text::_($this->updatetext);
 
 			} else {
-				$status =  JText::_($this->installtext);
+				$status =  Text::_($this->installtext);
 			}
-			$version 	= JText::_($this->versiontext). ': ' . $parent->getManifest()->version;
+			$version 	= Text::_($this->versiontext). ': ' . $parent->getManifest()->version;
 			$link 		= 'index.php?option='.$this->extension;
-			$component	= JText::_($this->extensiontext);
-			$configure	= JText::_($this->configuretext);
+			$component	= Text::_($this->extensiontext);
+			$configure	= Text::_($this->configuretext);
 
 			$o = '';
 			$o .= $this->getStyle();

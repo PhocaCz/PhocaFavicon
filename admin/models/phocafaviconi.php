@@ -118,7 +118,7 @@ class PhocaFaviconCpModelPhocaFaviconi extends JModelLegacy
 			{
 				$tmp 							= new JObject();
 				$tmp->name 						= basename($folder);
-				$tmp->path_with_name 			= str_replace('\\', '/', JPath::clean($orig_path . DS . $folder));
+				$tmp->path_with_name 			= str_replace('\\', '/', JPath::clean($orig_path . '/' . $folder));
 				$tmp->path_without_name_relative= $path['orig_rel_ds'] . str_replace($orig_path_server, '', $tmp->path_with_name);
 				$tmp->path_with_name_relative_no= str_replace($orig_path_server, '', $tmp->path_with_name);
 

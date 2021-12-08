@@ -2,7 +2,7 @@
 
 
 
-![Phoca Favicon](https://github.com/PhocaCz/PhocaFavicon/blob/master/phocafavicon.png)
+![Phoca Favicon](https://github.com/PhocaCz/PhocaFavicon/blob/master/phocafavicon.png?raw=true)
 
 # Phoca Favicon
 
@@ -23,6 +23,8 @@ Phoca Favicon is Joomla! CMS component. It is a simple component that generates 
 ## Documentation
 
 [Documentation](https://www.phoca.cz/documentation/category/4-phoca-favicon-component)
+
+
 
 
 
@@ -56,9 +58,13 @@ Phoca Favicon is Joomla! CMS component. It is a simple component that generates 
 
 
 
-## Version
+## Version (Joomla! 3.x)
 
 3.0.3
+
+## Version (Joomla! 4.x)
+
+4.0.0Beta
 
 
 

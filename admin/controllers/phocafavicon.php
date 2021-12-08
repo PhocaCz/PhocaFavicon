@@ -9,6 +9,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
 
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die();
 jimport('joomla.application.component.controllerform');
 jimport('joomla.client.helper');
@@ -27,7 +29,7 @@ class PhocaFaviconCpControllerPhocaFavicon extends JControllerLegacy
 	}
 	function favicon()
 	{
-		$msg = JText::_( 'COM_PHOCAFAVICON_SUCCESS_CREATING_FAVICON' );
+		$msg = Text::_( 'COM_PHOCAFAVICON_SUCCESS_CREATING_FAVICON' );
 		$link = 'index.php?option=com_phocafavicon';
 		//$this->setRedirect($link, $msg);
 
@@ -41,7 +43,7 @@ class PhocaFaviconCpControllerPhocaFavicon extends JControllerLegacy
         $app		= JFactory::getApplication();
 	    if (!JSession::checkToken('request')) {
             $link = 'index.php?option=com_phocafavicon&view=phocafavicon';
-            $app->enqueueMessage(JText::_('JINVALID_TOKEN'), 'error');
+            $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
             $app->redirect(JRoute::_($link));
         }
 
@@ -53,10 +55,10 @@ class PhocaFaviconCpControllerPhocaFavicon extends JControllerLegacy
 		$message 	= '';
 
 		if ($model->create($post['jform'], $message)) {
-			$msg = JText::_( 'COM_PHOCAFAVICON_SUCCESS_CREATING_FAVICON' );
+			$msg = Text::_( 'COM_PHOCAFAVICON_SUCCESS_CREATING_FAVICON' );
 
 		} else {
-			$message = PhocaFaviconHelper::setMessage($message, JText::_( 'COM_PHOCAFAVICON_ERROR_CREATING_FAVICON' ));
+			$message = PhocaFaviconHelper::setMessage($message, Text::_( 'COM_PHOCAFAVICON_ERROR_CREATING_FAVICON' ));
 		}
 
 		$link = 'index.php?option=com_phocafavicon&view=phocafavicon';

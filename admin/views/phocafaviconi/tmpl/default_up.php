@@ -1,19 +1,19 @@
-<?php defined('_JEXEC') or die('Restricted access'); ?>
+<?php
+/* @package Joomla
+ * @copyright Copyright (C) Open Source Matters. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ * @extension Phoca Extension
+ * @copyright Copyright (C) Jan Pavelka www.phoca.cz
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
+use Joomla\CMS\HTML\HTMLHelper;
 
-<div class="phocafavicon-box-file-i">
-	<center>
-		<div class="phocafavicon-box-file-first-i">
-			<div class="phocafavicon-box-file-second">
-				<div class="phocafavicon-box-file-third">
-					<center>
-					<a href="index.php?option=com_phocafavicon&amp;view=phocafaviconi&amp;tmpl=component&amp;folder=<?php echo $this->folderstate->parent .'&amp;field='. $this->field; ?>" ><?php echo JHTML::_( 'image', 'media/com_phocafavicon/images/administrator/icon-64-up.png', ''); ?></a>
-					</center>
-				</div>
-			</div>
-		</div>
-	</center>
-	
-	<div class="name"><a href="index.php?option=com_phocafavicon&amp;view=phocafaviconi&amp;tmpl=component&amp;folder=<?php echo $this->folderstate->parent .'&amp;field='. $this->field; ?>" >..</a></div>
-		<div class="detail" style="text-align:right">&nbsp;</div>
-	<div style="clear:both"></div>
+defined('_JEXEC') or die('Restricted access'); ?>
+
+<div class="ph-item-box">
+		<div class="ph-item-image"><a href="index.php?option=com_phocafavicon&amp;view=phocafaviconi&amp;tmpl=component&amp;folder=<?php echo PhocaFaviconUtils::filterValue($this->folderstate->parent, 'folderpath'); ?>&amp;field=<?php echo htmlspecialchars($this->field); ?>" ><span class="ph-cp-item"><i class="phi duotone phi-fs-l phi-fc-bl icon-arrow-up"></i></span></a></div>
+
+	    <div class="ph-item-name"><a href="index.php?option=com_phocafavicon&amp;view=phocafaviconi&amp;tmpl=component&amp;folder=<?php echo PhocaFaviconUtils::filterValue($this->folderstate->parent, 'folderpath'); ?>&amp;field=<?php echo htmlspecialchars($this->field); ?>" >..</a></div>
+
+        <div class="ph-item-action-box"></div>
 </div>

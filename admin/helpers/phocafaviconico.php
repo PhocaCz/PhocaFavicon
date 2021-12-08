@@ -1,13 +1,14 @@
 <?php
-/*
- * @package Joomla 1.5
- * @copyright Copyright (C) 2005 Open Source Matters. All rights reserved.
+/* @package Joomla
+ * @copyright Copyright (C) Open Source Matters. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
- *
- * @component Phoca Favicon
+ * @extension Phoca Extension
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
+
+defined('_JEXEC') or die();
+
 jimport( 'joomla.application.component.controller' );
 jimport( 'joomla.filesystem.folder' );
 jimport( 'joomla.filesystem.file' );
@@ -31,9 +32,13 @@ class PhocaFaviconIcoHelper
 			default: return false; break;
 		}
 
-        @$image_create_fromS = $imgIn($file_thumbnails[0]);
-        @$image_create_fromM = $imgIn($file_thumbnails[1]);
-        @$image_create_fromL = $imgIn($file_thumbnails[2]);
+        $a = ImageCreateFromJPEG($file_thumbnails[2]);
+
+        $image_create_fromS = $imgIn($file_thumbnails[0]);
+        $image_create_fromM = $imgIn($file_thumbnails[1]);
+        $image_create_fromL = $imgIn($file_thumbnails[2]);
+
+
 		if ($image_create_fromS && $image_create_fromM && $image_create_fromL)  {
 
 		    $images_create_from = array($image_create_fromS, $image_create_fromM, $image_create_fromL);
@@ -64,14 +69,20 @@ class PhocaFaviconIcoHelper
 	    	$bpp[$key]          = ImageIsTrueColor($gd_image) ? 32 : 24;
 	    	$totalcolors[$key]  = ImageColorsTotal($gd_image);
 
-
-
 			$icXOR[$key] = '';
 			for ($y = $ImageHeights[$key] - 1; $y >= 0; $y--)
 			{
 				for ($x = 0; $x < $ImageWidths[$key]; $x++)
 				{
+
 					$argb = PhocaFaviconIcoHelper::GetPixelColor($gd_image, $x, $y);
+
+                    if (!$argb) {
+                        $argb['alpha'] = 100;
+                        $argb['red'] = 100;
+                        $argb['green'] = 100;
+                        $argb['blue'] = 100;
+                    }
 					$a = round(255 * ((127 - $argb['alpha']) / 127));
 					$r = $argb['red'];
 					$g = $argb['green'];
@@ -171,8 +182,9 @@ class PhocaFaviconIcoHelper
 //------------------------------------------------------------------------------------------
 	public static function GetPixelColor(&$img, $x, $y)
 	{
-		if (!is_resource($img))
-		{
+		if (is_resource($img) || $img instanceof \GdImage) {
+            // PHP 8 changes
+        } else {
 			return false;
 		}
 		return @ImageColorsForIndex($img, @ImageColorAt($img, $x, $y));

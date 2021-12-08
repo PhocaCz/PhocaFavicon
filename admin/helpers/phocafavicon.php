@@ -8,6 +8,12 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
+defined('_JEXEC') or die();
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Uri\Uri;
+
 jimport( 'joomla.application.component.controller' );
 jimport( 'joomla.filesystem.folder' );
 jimport( 'joomla.filesystem.file' );
@@ -19,6 +25,8 @@ class PhocaFaviconHelper
 		$path['orig_abs_ds'] 	= JPATH_ROOT .  '/images/phocafavicon/' ;
 		$path['orig_abs'] 		= JPATH_ROOT .  '/images/phocafavicon' ;
 		$path['tmpl_abs_ds'] 	= JPATH_ROOT .  '/templates/';
+		$path['media_system_img_abs_ds'] 	= JPATH_ROOT .  '/media/system/images/';
+		$path['yootheme_img_abs_ds'] 	= JPATH_ROOT .  '/templates/yootheme/vendor/yootheme/theme-joomla/assets/images/';
 		$path['orig_rel_ds'] 	= '../' . "images/phocafavicon/";
 
 		return $path;
@@ -133,9 +141,16 @@ class PhocaFaviconHelper
 
 					if ($creating == 1 || $creating == 3)//thumbnail now created or thumbnail exists now
 					{
-						$file_favicon 	= str_replace('\\', '/', JPath::clean($path['tmpl_abs_ds']. '/' .$template . '/'. 'favicon.ico'));
+						$file_favicon 	= str_replace('\\', '/', JPath::clean($path['tmpl_abs_ds']. '/' .$template . '/'. 'favicon.ico'));// STANDARD
+						$file_favicon2 	= str_replace('\\', '/', JPath::clean($path['media_system_img_abs_ds']. 'favicon.ico'));// CASSIOPEIA media/system/images
+						$file_favicon3 	= str_replace('\\', '/', JPath::clean($path['tmpl_abs_ds']. '/' .$template . '/images/'. 'favicon.ico'));// STANDARD image folder
+						$file_favicon4 	= str_replace('\\', '/', JPath::clean($path['yootheme_img_abs_ds'].  'favicon.ico'));// YOOtheme
+						$file_favicon5 	= str_replace('\\', '/', JPath::clean($path['yootheme_img_abs_ds'].  'favicon.png'));// YOOtheme (PNG)
 						$file_resize	= PhocaFaviconHelper::getFileResize('favicon');
 
+
+
+						// STANDARD FAVICON
 						if (JFile::exists($file['thumb_name_s_no_abs']) && JFile::exists($file['thumb_name_m_no_abs']) && JFile::exists($file['thumb_name_l_no_abs'])) {
 							if (JFile::exists($file_favicon))//if favicon exists, rename it to bak file
 							{
@@ -151,16 +166,14 @@ class PhocaFaviconHelper
 										$creating = 2;
 									}
 								} else {
-									$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON');
+									$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON'). ' (Templates)';
 									return false;
 								}
-							}
-							else
-							{
+							} else  {
 								$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon);
 								if ($icon_data)
 								{
-									JFile::write( $file_favicon, $icon_data );
+									File::write( $file_favicon, $icon_data );
 									$creating = 1;
 								}
 								else
@@ -168,8 +181,89 @@ class PhocaFaviconHelper
 									$creating = 2;
 								}
 							}
+
+							// FAVICON IN Media/System/Images - Create only in case this folder has favicon (no else if favicon does not exist)
+							if (JFile::exists($file_favicon2) && $template == 'cassiopeia')//if favicon exists, rename it to bak file
+							{
+								if (JFile::copy( $file_favicon2, $file_favicon2 . '.bak', '' )) {
+									$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon2);
+									if ($icon_data)
+									{
+										JFile::write( $file_favicon2, $icon_data );
+										$creating = 1;
+									}
+									else
+									{
+										$creating = 2;
+									}
+								} else {
+									$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON') . ' (Media/System/Images)';
+									return false;
+								}
+							}
+
+
+							// STANDARD FAVICON BUT STORED IN IMAGES FOLDER - Create only in case this folder has favicon (no else if favicon does not exist)
+							if (JFile::exists($file_favicon3))//if favicon exists, rename it to bak file
+							{
+								if (JFile::copy( $file_favicon3, $file_favicon3 . '.bak', '' )) {
+									$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon3);
+									if ($icon_data)
+									{
+										JFile::write( $file_favicon3, $icon_data );
+										$creating = 1;
+									}
+									else
+									{
+										$creating = 2;
+									}
+								} else {
+									$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON') . ' (Templates/Images)';
+									return false;
+								}
+							}
+
+							// YOOtheme - Create only in case this folder has favicon (no else if favicon does not exist)
+							if (JFile::exists($file_favicon4) && $template == 'yootheme')//if favicon exists, rename it to bak file
+							{
+
+								if (JFile::copy( $file_favicon4, $file_favicon4 . '.bak', '' )) {
+									$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon4);
+									if ($icon_data)
+									{
+										JFile::write( $file_favicon4, $icon_data );
+										$creating = 1;
+									}
+									else
+									{
+										$creating = 2;
+									}
+								} else {
+									$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON') . ' (Templates/YOOtheme)';
+									return false;
+								}
+							} else if (JFile::exists($file_favicon5) && $template == 'yootheme')//if favicon exists, rename it to bak file
+							{
+
+								if (JFile::copy( $file_favicon5, $file_favicon5 . '.bak', '' )) {
+									$icon_data = PhocaFaviconIcoHelper::createIcoFile(array($file['thumb_name_s_no_abs'],$file['thumb_name_m_no_abs'],$file['thumb_name_l_no_abs']), $file_favicon5);
+									if ($icon_data)
+									{
+										JFile::write( $file_favicon5, $icon_data );
+										$creating = 1;
+									}
+									else
+									{
+										$creating = 2;
+									}
+								} else {
+									$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_UNABLE_COPY_FAVICON') . ' (Templates/YOOtheme)';
+									return false;
+								}
+							}
+
 						} else {
-							$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_THUMB_NOT_EXISTS');
+							$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_FAVICON_THUMB_NOT_EXISTS');
 							return false;
 						}
 					}
@@ -185,17 +279,17 @@ class PhocaFaviconHelper
 					echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-en" lang="en-en" dir="ltr" >'. "\n";
 					echo '<head>'. "\n";
 					echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'. "\n\n";
-					echo '<title>'.JText::_( 'COM_PHOCAFAVICON_FAVICON_CREATING').'</title>'. "\n";
-					echo '<link rel="stylesheet" href="'.JURI::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
+					echo '<title>'.Text::_( 'COM_PHOCAFAVICON_FAVICON_CREATING').'</title>'. "\n";
+					echo '<link rel="stylesheet" href="'.Uri::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
 					echo '</head>'. "\n";
 					echo '<body>'. "\n";
 
 					echo '<center>';
 					echo '<div style="width:70%;border:5px solid #FFE699; margin-top:30px;font-family: sans-serif, Arial;font-weight:normal;color:#666;font-size:14px;padding:10px">'
-						.'<span>'. JText::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_WAIT' ) . '</span>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_FROM_FILE' )
+						.'<span>'. Text::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_WAIT' ) . '</span>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_FROM_FILE' )
 						.' <span style="color:#0066cc"> '. $file['name'] . '</span>'
-						.' ... <span style="color:#009900">'.JText::_('COM_PHOCAFAVICON_OK').'</span></p></center></div></body></html>';
+						.' ... <span style="color:#009900">'.Text::_('COM_PHOCAFAVICON_OK').'</span></p></center></div></body></html>';
 					//$creating = 0;
 					echo '<meta http-equiv="refresh" content="1;url='.$refresh_url.'" />';
 					exit;
@@ -208,28 +302,28 @@ class PhocaFaviconHelper
 					echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-en" lang="en-en" dir="ltr" >'. "\n";
 					echo '<head>'. "\n";
 					echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'. "\n\n";
-					echo '<title>'.JText::_( 'COM_PHOCAFAVICON_FAVICON_CREATING').'</title>'. "\n";
-					echo '<link rel="stylesheet" href="'.JURI::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
+					echo '<title>'.Text::_( 'COM_PHOCAFAVICON_FAVICON_CREATING').'</title>'. "\n";
+					echo '<link rel="stylesheet" href="'.Uri::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
 					echo '</head>'. "\n";
 					echo '<body>'. "\n";
 
 					echo '<center>';
 					echo '<div style="width:70%;border:5px solid #FFE699; margin-top:30px;font-family: sans-serif, Arial;font-weight:normal;color:#666;font-size:14px;padding:10px">'
-						.'<span>'. JText::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_WAIT' ) . '</span>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_FROM_FILE' )
+						.'<span>'. Text::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_WAIT' ) . '</span>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_CREATING_FAVICON_FROM_FILE' )
 						.' <span style="color:#0066cc"> '. $file['name'] . '</span>'
-						.' ... <span style="color:#fc0000">'.JText::_('COM_PHOCAFAVICON_ERROR').'</span></p>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_ERROR_CRATING_FAVICON' ).'</p>';
+						.' ... <span style="color:#fc0000">'.Text::_('COM_PHOCAFAVICON_ERROR').'</span></p>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_ERROR_CRATING_FAVICON' ).'</p>';
 
 					//we are in whole site or in modal box
 					$positioni = strpos($refresh_url, "view=phocafaviconi");
 					if ($positioni === false)//we are in whole window - not in modal box
 					{
-						echo '<p><a href="index.php?option=com_phocafavicon">' .JText::_( 'COM_PHOCAFAVICON_BACK' ).'</a></p></center></div></body></html>';
+						echo '<p><a href="index.php?option=com_phocafavicon">' .Text::_( 'COM_PHOCAFAVICON_BACK' ).'</a></p></center></div></body></html>';
 					}
 					else //we are in modal box
 					{
-						echo '<p><a href="#" onclick="window.parent.SqueezeBox.close();">' .JText::_( 'COM_PHOCAFAVICON_CLOSE_WINDOW' ).'</a></p></center></div></body></html>';
+						echo '<p><a href="#" onclick="window.parent.SqueezeBox.close();">' .Text::_( 'COM_PHOCAFAVICON_CLOSE_WINDOW' ).'</a></p></center></div></body></html>';
 					}
 					//$creating = 0;
 					//echo '<meta http-equiv="refresh" content="0;url='.$refresh_url.'" />';
@@ -258,7 +352,7 @@ class PhocaFaviconHelper
 		$file['path_with_name_relative']		= $path['orig_rel_ds'] . str_replace($orig_path_server, '', $file['path_with_name']);
 		$file['path_with_name_relative_no']		= str_replace($orig_path_server, '', $file['path_with_name']);
 
-		$file['path_without_name']				= str_replace('\\', '/', JPath::clean($orig_path.DS));
+		$file['path_without_name']				= str_replace('\\', '/', JPath::clean($orig_path.'/'));
 		$file['path_without_name_relative']		= $path['orig_rel_ds'] . str_replace($orig_path_server, '', $file['path_without_name']);
 		$file['path_without_name_relative_no']	= str_replace($orig_path_server, '', $file['path_without_name']);
 		$file['path_without_name_thumbs'] 		= $file['path_without_name'] .'thumbs';
@@ -329,17 +423,17 @@ class PhocaFaviconHelper
 					echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-en" lang="en-en" dir="ltr" >'. "\n";
 					echo '<head>'. "\n";
 					echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'. "\n\n";
-					echo '<title>'.JText::_( 'COM_PHOCAFAVICON_FAVICON_THUMBNAIL_CREATING').'</title>'. "\n";
-					echo '<link rel="stylesheet" href="'.JURI::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
+					echo '<title>'.Text::_( 'COM_PHOCAFAVICON_FAVICON_THUMBNAIL_CREATING').'</title>'. "\n";
+					echo '<link rel="stylesheet" href="'.Uri::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
 					echo '</head>'. "\n";
 					echo '<body>'. "\n";
 
 					echo '<center>';
 					echo '<div style="width:70%;border:5px solid #FFE699; margin-top:30px;font-family: sans-serif, Arial;font-weight:normal;color:#666;font-size:14px;padding:10px">'
-						.'<span>'. JText::_( 'COM_PHOCAFAVICON_CREATING_THUMB_WAIT' ) . '</span>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_CREATING_OF_THUMB' )
+						.'<span>'. Text::_( 'COM_PHOCAFAVICON_CREATING_THUMB_WAIT' ) . '</span>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_CREATING_OF_THUMB' )
 						.' <span style="color:#0066cc"> '. $file['name'] . '</span>'
-						.' ... <span style="color:#009900">' .JText::_( 'COM_PHOCAFAVICON_OK' ).'</span></p></center></div></body></html>';
+						.' ... <span style="color:#009900">' .Text::_( 'COM_PHOCAFAVICON_OK' ).'</span></p></center></div></body></html>';
 					//$creating = 0;
 					echo '<meta http-equiv="refresh" content="1;url='.$refresh_url.'" />';
 					exit;
@@ -351,28 +445,28 @@ class PhocaFaviconHelper
 					echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-en" lang="en-en" dir="ltr" >'. "\n";
 					echo '<head>'. "\n";
 					echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />'. "\n\n";
-					echo '<title>'.JText::_( 'COM_PHOCAFAVICON_FAVICON_THUMBNAIL_CREATING').'</title>'. "\n";
-					echo '<link rel="stylesheet" href="'.JURI::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
+					echo '<title>'.Text::_( 'COM_PHOCAFAVICON_FAVICON_THUMBNAIL_CREATING').'</title>'. "\n";
+					echo '<link rel="stylesheet" href="'.Uri::base(true).'/components/com_phocafavicon/assets/phocafavicon.css" type="text/css" />';
 					echo '</head>'. "\n";
 					echo '<body>'. "\n";
 
 					echo '<center>';
 					echo '<div style="width:70%;border:5px solid #FFE699; margin-top:30px;font-family: sans-serif, Arial;font-weight:normal;color:#666;font-size:14px;padding:10px">'
-						.'<span>'. JText::_( 'COM_PHOCAFAVICON_CREATING_THUMB_WAIT' ) . '</span>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_CREATING_OF_THUMB' )
+						.'<span>'. Text::_( 'COM_PHOCAFAVICON_CREATING_THUMB_WAIT' ) . '</span>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_CREATING_OF_THUMB' )
 						.' <span style="color:#0066cc"> '. $file['name'] . '</span>'
-						.' ... <span style="color:#fc0000">' .JText::_( 'COM_PHOCAFAVICON_ERROR' ).'</span></p>';
-					echo '<p>' .JText::_( 'COM_PHOCAFAVICON_ERROR_CRATING_THUMB' ).'</p>';
+						.' ... <span style="color:#fc0000">' .Text::_( 'COM_PHOCAFAVICON_ERROR' ).'</span></p>';
+					echo '<p>' .Text::_( 'COM_PHOCAFAVICON_ERROR_CRATING_THUMB' ).'</p>';
 
 					//we are in whole site or in modal box
 					$positioni = strpos($refresh_url, "view=phocafaviconi");
 					if ($positioni === false)//we are in whole window - not in modal box
 					{
-						echo '<p><a href="index.php?option=com_phocafavicon">' .JText::_( 'COM_PHOCAFAVICON_BACK' ).'</a></p></center></div></body></html>';
+						echo '<p><a href="index.php?option=com_phocafavicon">' .Text::_( 'COM_PHOCAFAVICON_BACK' ).'</a></p></center></div></body></html>';
 					}
 					else //we are in modal box
 					{
-						echo '<p><a href="#" onclick="window.parent.SqueezeBox.close();">' .JText::_( 'COM_PHOCAFAVICON_CLOSE_WINDOW' ).'</a></p></center>';
+						echo '<p><a href="#" onclick="window.parent.SqueezeBox.close();">' .Text::_( 'COM_PHOCAFAVICON_CLOSE_WINDOW' ).'</a></p></center>';
 					}
 					//$creating = 0;
 					//echo '<meta http-equiv="refresh" content="0;url='.$refresh_url.'" />';
@@ -399,7 +493,7 @@ class PhocaFaviconHelper
 				{
 					JFolder::create($folder_thumbnail, 0755);
 					$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
-					JFile::write($folder_thumbnail.DS."index.html", $data);
+					JFile::write($folder_thumbnail."/index.html", $data);
 				}
 			}
 		}
@@ -422,7 +516,7 @@ class PhocaFaviconHelper
 
 				// Render the message only one time
 				if ($size == 'small') {
-					echo '<div style="font-family: sans-serif, Arial">' . JText::_('COM_PHOCAFAVICON_POSSIBLE_PROBLEM_IMAGE_CREATING') . '</div>';
+					echo '<div style="font-family: sans-serif, Arial">' . Text::_('COM_PHOCAFAVICON_POSSIBLE_PROBLEM_IMAGE_CREATING') . '</div>';
 				}
 
 				if ($width > $file_resize['width'] || $height > $file_resize['width'])//larger
@@ -525,7 +619,7 @@ class PhocaFaviconHelper
 	            case IMAGETYPE_GIF : $imgIn = 'ImageCreateFromGIF';  break;
 	            case IMAGETYPE_WBMP: $imgIn = 'ImageCreateFromWBMP'; break;
 	            default:
-					$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_NOT_SUPPORTED_IMAGE_TYPE');
+					$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_NOT_SUPPORTED_IMAGE_TYPE');
 					return false;
 				break;
 	        }
@@ -541,7 +635,7 @@ class PhocaFaviconHelper
 	            case IMAGETYPE_GIF : $imgOut = 'ImageGIF';  break;
 	            case IMAGETYPE_WBMP: $imgOut = 'ImageWBMP'; break; // bitmapa je blbost
 	            default:
-					$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_NOT_SUPPORTED_IMAGE_TYPE');
+					$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_NOT_SUPPORTED_IMAGE_TYPE');
 					return false;
 				break;
 	        }
@@ -593,7 +687,7 @@ class PhocaFaviconHelper
 	            $image2 = ImageCreateTruecolor($dst[2], $dst[3]);
 
 				if (!$image2) {
-					$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_GD_IMAGE_CREATE_TRUE_COLOR');
+					$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_GD_IMAGE_CREATE_TRUE_COLOR');
 					return false;
 				}
 
@@ -656,7 +750,7 @@ class PhocaFaviconHelper
 
 	            return true; // tohle je jediny misto, kde se da vratit uspech
 	        } else {
-				$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_GD_IMAGE');
+				$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_GD_IMAGE');
 				return false;
 			}
 
@@ -665,7 +759,7 @@ class PhocaFaviconHelper
 				ini_set('memory_limit', $memoryString);
 			}
 	    }
-		$errorMsg = JText::_('COM_PHOCAFAVICON_ERROR_CREATING_IMAGE_FILE_NOT_EXISTS');
+		$errorMsg = Text::_('COM_PHOCAFAVICON_ERROR_CREATING_IMAGE_FILE_NOT_EXISTS');
 	    return false;
 	}
 
@@ -918,16 +1012,16 @@ class PhocaFaviconHelper
 
 	public static function  renderFTPaccess() {
 
-		$ftpOutput = '<fieldset title="'.JText::_('COM_PHOCAFAVICON_FTP_LOGIN_LABEL'). '">'
-		.'<legend>'. JText::_('COM_PHOCAFAVICON_FTP_LOGIN_LABEL').'</legend>'
-		.JText::_('COM_PHOCAFAVICON_FTP_LOGIN_DESC')
+		$ftpOutput = '<fieldset title="'.Text::_('COM_PHOCAFAVICON_FTP_LOGIN_LABEL'). '">'
+		.'<legend>'. Text::_('COM_PHOCAFAVICON_FTP_LOGIN_LABEL').'</legend>'
+		.Text::_('COM_PHOCAFAVICON_FTP_LOGIN_DESC')
 		.'<table class="adminform nospace">'
 		.'<tr>'
-		.'<td width="120"><label for="username">'. JText::_('JGLOBAL_USERNAME').':</label></td>'
+		.'<td width="120"><label for="username">'. Text::_('JGLOBAL_USERNAME').':</label></td>'
 		.'<td><input type="text" id="username" name="username" class="input_box" size="70" value="" /></td>'
 		.'</tr>'
 		.'<tr>'
-		.'<td width="120"><label for="password">'. JText::_('JGLOBAL_PASSWORD').':</label></td>'
+		.'<td width="120"><label for="password">'. Text::_('JGLOBAL_PASSWORD').':</label></td>'
 		.'<td><input type="password" id="password" name="password" class="input_box" size="70" value="" /></td>'
 		.'</tr></table></fieldset>';
 		return $ftpOutput;

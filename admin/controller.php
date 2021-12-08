@@ -6,6 +6,7 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
+defined('_JEXEC') or die();
 jimport('joomla.application.component.controller');
 $app		= JFactory::getApplication();
 $option 	= $app->input->get('option');
@@ -31,9 +32,9 @@ if ($layout == 'edit') {
 		}
 
 		if ($view == $v[1]) {
-			JHtmlSidebar::addEntry(JText::_($v[0]), $link.$v[1], true );
+			//HtmlSidebar::addEntry(Text::_($v[0]), $link.$v[1], true );
 		} else {
-			JHtmlSidebar::addEntry(JText::_($v[0]), $link.$v[1]);
+			//HtmlSidebar::addEntry(Text::_($v[0]), $link.$v[1]);
 		}
 	}
 }

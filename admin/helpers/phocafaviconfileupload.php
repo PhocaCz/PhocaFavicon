@@ -8,6 +8,13 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
+
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class PhocaFaviconFileUploadSingle
@@ -20,7 +27,7 @@ class PhocaFaviconFileUploadSingle
 
 
 		$html = '<input type="file" id="sfile-upload" name="Filedata" />'
-		.'<button class="btn btn-primary" id="sfile-upload-submit"><i class="icon-upload icon-white"></i> '.JText::_('COM_PHOCAFAVICON_START_UPLOAD').'</button>'
+		.'<button class="btn btn-primary" id="sfile-upload-submit"><i class="icon-upload icon-white"></i> '.Text::_('COM_PHOCAFAVICON_START_UPLOAD').'</button>'
 		.'<input type="hidden" name="return-url" value="'. base64_encode($this->returnUrl).'" />';
 
 		return $html;
@@ -33,7 +40,7 @@ class PhocaFaviconFileUpload
 	public static function realSingleUpload( $frontEnd = 0 ) {
 
 		$app			= JFactory::getApplication();
-		JSession::checkToken( 'request' ) or jexit( 'ERROR: '. JTEXT::_('COM_PHOCAFAVICON_INVALID_TOKEN'));
+		JSession::checkToken( 'request' ) or jexit( 'ERROR: '. Text::_('COM_PHOCAFAVICON_INVALID_TOKEN'));
         $app->allowCache(false);
 
 
@@ -61,60 +68,66 @@ class PhocaFaviconFileUpload
 		}
 
 
-		$ftp = JClientHelper::setCredentialsFromRequest('ftp');
+		//$ftp = JClientHelper::setCredentialsFromRequest('ftp');
 
 		// Make the filename safe
 		if (isset($file['name'])) {
-			$file['name']	= JFile::makeSafe($file['name']);
+			$file['name']	= File::makeSafe($file['name']);
 		}
 
 
 		if (isset($folder) && $folder != '') {
-			$folder	= $folder . DS;
+			$folder	= $folder . '/';
 		}
 
 
 		// All HTTP header will be overwritten with js message
 		if (isset($file['name'])) {
-			$filepath = JPath::clean($path['orig_abs_ds'].$folder.strtolower($file['name']));
+			$filepath = Path::clean($path['orig_abs_ds'].$folder.strtolower($file['name']));
 
 			if (!PhocaFaviconFileUpload::canUpload( $file, $errUploadMsg, $frontEnd )) {
 
 				if ($errUploadMsg == 'COM_PHOCAFAVICON_WARNING_FILE_TOOLARGE') {
-					$errUploadMsg 	= JText::_($errUploadMsg) . ' ('.PhocaFaviconHelper::getFileSizeReadable($file['size']).')';
+					$errUploadMsg 	= Text::_($errUploadMsg) . ' ('.PhocaFaviconHelper::getFileSizeReadable($file['size']).')';
 				} else if ($errUploadMsg == 'COM_PHOCAFAVICON_WARNING_FILE_TOOLARGE_RESOLUTION') {
 					$imgSize		= PhocaFaviconHelper::getImageSize($file['tmp_name'], 0, 1);
-					$errUploadMsg 	= JText::_($errUploadMsg) . ' ('.(int)$imgSize[0].' x '.(int)$imgSize[1].' px)';
+					$errUploadMsg 	= Text::_($errUploadMsg) . ' ('.(int)$imgSize[0].' x '.(int)$imgSize[1].' px)';
 				} else {
-					$errUploadMsg 	= JText::_($errUploadMsg);
+					$errUploadMsg 	= Text::_($errUploadMsg);
 				}
 
 
 				if ($return) {
-					$app->redirect(base64_decode($return).'&folder='.$folderUrl, $errUploadMsg, 'error');
+					$app->enqueueMessage($errUploadMsg, 'error');
+					$app->redirect(base64_decode($return).'&folder='.$folderUrl);
 					exit;
 				} else {
-					$app->redirect($componentUrl, $errUploadMsg, 'error');
-					exit;
-				}
-			}
-
-			if (JFile::exists($filepath)) {
-				if ($return) {
-					$app->redirect(base64_decode($return).'&folder='.$folderUrl, JText::_('COM_PHOCAFAVICON_FILE_ALREADY_EXISTS'), 'error');
-					exit;
-				} else {
-					$app->redirect($componentUrl, JText::_('COM_PHOCAFAVICON_FILE_ALREADY_EXISTS'), 'error');
+					$app->enqueueMessage($errUploadMsg, 'error');
+					$app->redirect($componentUrl);
 					exit;
 				}
 			}
 
-			if (!JFile::upload($file['tmp_name'], $filepath, false, true)) {
+			if (File::exists($filepath)) {
 				if ($return) {
-					$app->redirect(base64_decode($return).'&folder='.$folderUrl, JText::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_FILE_ALREADY_EXISTS'), 'error');
+					$app->redirect(base64_decode($return).'&folder='.$folderUrl);
 					exit;
 				} else {
-					$app->redirect($componentUrl, JText::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_FILE_ALREADY_EXISTS'), 'error');
+					$app->redirect($componentUrl);
+					exit;
+				}
+			}
+
+			if (!File::upload($file['tmp_name'], $filepath, false, true)) {
+				if ($return) {
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+					$app->redirect(base64_decode($return).'&folder='.$folderUrl);
+					exit;
+				} else {
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE'), 'error');
+					$app->redirect($componentUrl);
 					exit;
 				}
 			} else {
@@ -124,27 +137,32 @@ class PhocaFaviconFileUpload
 				}
 
 				if ($return) {
-					$app->redirect(base64_decode($return).'&folder='.$folderUrl, JText::_('COM_PHOCAFAVICON_SUCCESS_FILE_UPLOAD'));
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_SUCCESS_FILE_UPLOAD'), 'success');
+					$app->redirect(base64_decode($return).'&folder='.$folderUrl);
 					exit;
 				} else {
-					$app->redirect($componentUrl, JText::_('COM_PHOCAFAVICON_SUCCESS_FILE_UPLOAD'));
+					$app->enqueueMessage(Text::_('COM_PHOCAFAVICON_SUCCESS_FILE_UPLOAD'), 'success');
+					$app->redirect($componentUrl);
 					exit;
 				}
 			}
 		} else {
-			$msg = JText::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE');
+			$msg = Text::_('COM_PHOCAFAVICON_ERROR_UNABLE_TO_UPLOAD_FILE');
 			if ($return) {
-				$app->redirect(base64_decode($return).'&folder='.$folderUrl, $msg);
+				$app->enqueueMessage($msg, 'error');
+				$app->redirect(base64_decode($return).'&folder='.$folderUrl);
 				exit;
 			} else {
 				switch ($viewBack) {
 					case 'phocafaviconi':
-						$app->redirect('index.php?option=com_phocafavicon&view=phocafaviconi&tmpl=component'.$tabUrl.'&folder='.$folder.'&field='.$field, $msg, 'error');
+						$app->enqueueMessage($msg, 'error');
+						$app->redirect('index.php?option=com_phocafavicon&view=phocafaviconi&tmpl=component'.$tabUrl.'&folder='.$folder.'&field='.$field);
 						exit;
 					break;
 
 					default:
-						$app->redirect('index.php?option=com_phocafavicon', $msg, 'error');
+						$app->enqueueMessage($msg, 'error');
+						$app->redirect('index.php?option=com_phocafavicon');
 						exit;
 					break;
 
@@ -170,7 +188,7 @@ class PhocaFaviconFileUpload
 
 	public static function canUpload( $file, &$errUploadMsg, $frontEnd = 0, $chunkEnabled = 0, $realSize = 0 ) {
 
-		$params 	= JComponentHelper::getParams( 'com_phocafavicon' );
+		$params 	= ComponentHelper::getParams( 'com_phocafavicon' );
 		$paramsL 	= array();
 		$paramsL['upload_extensions'] 	= 'gif,jpg,png,jpeg';
 		$paramsL['image_extensions'] 	= 'gif,jpg,png,jpeg';
@@ -185,12 +203,12 @@ class PhocaFaviconFileUpload
 
 		// Not safe file
 		jimport('joomla.filesystem.file');
-		if ($file['name'] !== JFile::makesafe($file['name'])) {
+		if ($file['name'] !== File::makesafe($file['name'])) {
 			$errUploadMsg = 'COM_PHOCAFAVICON_WARNING_FILENAME';
 			return false;
 		}
 
-		$format = strtolower(JFile::getExt($file['name']));
+		$format = strtolower(File::getExt($file['name']));
 
 		// Allowable extension
 		$allowable = explode( ',', $paramsL['upload_extensions']);
@@ -225,7 +243,7 @@ class PhocaFaviconFileUpload
 			}
 		}
 
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 		$imginfo = null;
 
 
@@ -265,7 +283,7 @@ class PhocaFaviconFileUpload
 		}
 
 		// XSS Check
-		$xss_check =  JFile::read($file['tmp_name'],false,256);
+		$xss_check = file_get_contents($file['tmp_name'], false, null, -1, 256);
 		$html_tags = array('abbr','acronym','address','applet','area','audioscope','base','basefont','bdo','bgsound','big','blackface','blink','blockquote','body','bq','br','button','caption','center','cite','code','col','colgroup','comment','custom','dd','del','dfn','dir','div','dl','dt','em','embed','fieldset','fn','font','form','frame','frameset','h1','h2','h3','h4','h5','h6','head','hr','html','iframe','ilayer','img','input','ins','isindex','keygen','kbd','label','layer','legend','li','limittext','link','listing','map','marquee','menu','meta','multicol','nobr','noembed','noframes','noscript','nosmartquotes','object','ol','optgroup','option','param','plaintext','pre','rt','ruby','s','samp','script','select','server','shadow','sidebar','small','spacer','span','strike','strong','style','sub','sup','table','tbody','td','textarea','tfoot','th','thead','title','tr','tt','ul','var','wbr','xml','xmp','!DOCTYPE', '!--');
 		foreach($html_tags as $tag) {
 			// A tag is '<tagname ', so we need to add < and a space or '<tagname>'

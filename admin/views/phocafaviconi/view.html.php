@@ -8,6 +8,9 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
+
+use Joomla\CMS\HTML\HTMLHelper;
+
 defined( '_JEXEC' ) or die();
 jimport( 'joomla.client.helper' );
 jimport( 'joomla.application.component.view');
@@ -44,7 +47,7 @@ class PhocaFaviconCpViewPhocaFaviconi extends JViewLegacy
 		$this->t['uploadmaxreswidth'] 	= $params->get( 'upload_maxres_width', 3072 );
 		$this->t['uploadmaxresheight'] 	= $params->get( 'upload_maxres_height', 2304 );
 
-		JHTML::stylesheet( $this->t['s'] );
+		HtmlHelper::stylesheet( $this->t['s'] );
 
 
 		$this->currentFolder = '';
