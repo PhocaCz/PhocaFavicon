@@ -64,7 +64,7 @@ Phoca Favicon is Joomla! CMS component. It is a simple component that generates 
 
 ## Version (Joomla! 4.x)
 
-4.0.0Beta
+4.0.0Beta2
 
 
 

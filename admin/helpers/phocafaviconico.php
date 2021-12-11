@@ -32,8 +32,6 @@ class PhocaFaviconIcoHelper
 			default: return false; break;
 		}
 
-        $a = ImageCreateFromJPEG($file_thumbnails[2]);
-
         $image_create_fromS = $imgIn($file_thumbnails[0]);
         $image_create_fromM = $imgIn($file_thumbnails[1]);
         $image_create_fromL = $imgIn($file_thumbnails[2]);
